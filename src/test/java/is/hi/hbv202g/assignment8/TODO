@@ -1,0 +1,16 @@
+  TODO:
+
+[DONE]      - Main
+[]          - LibrarySystem
+
+[ALMOST]    - Book
+[]          - Lending
+[DONE]      - Author
+
+[-]         - User (ABSTRACT)
+[DONE]      - Student
+[DONE]      - FacultyMember
+
+[]          - UserOrBookDoesNotExistException
+[]          - EmptyAuthorListException
+

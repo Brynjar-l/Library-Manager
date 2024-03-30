@@ -1,14 +1,12 @@
 package is.hi.hbv202g.assignment8;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // TODO: check for exception throwing, !IMPORTANT
 
