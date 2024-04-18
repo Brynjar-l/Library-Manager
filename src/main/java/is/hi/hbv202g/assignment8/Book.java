@@ -7,6 +7,7 @@ public class Book {
     private String title;
     private boolean isLent; // TODO isNEW
     private List<Author> authors = new ArrayList<Author>();
+    private Student lentTo;
 
     public Book(String title, String authorName) { // No need for Exception throwing
         this.title = title;
@@ -69,6 +70,20 @@ public class Book {
     // NEW TODO
     public void setLent(boolean bool) {
         isLent = bool;
+    }
+
+    public void setLentTo(Student user) {
+        lentTo = user;
+    }
+
+    public Student getLentTo() {
+        return lentTo;
+    }
+
+    public void returned() {
+        setLent(false);
+        lentTo.setFeePaid(true);
+        lentTo = null;
     }
 
 

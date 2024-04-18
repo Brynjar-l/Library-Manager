@@ -5,17 +5,19 @@ import java.time.LocalDate;
 public class LibrarySystem {
 
     private final List<User> users = new ArrayList<>();
-
-    public List<Book> getBooks() {
-        return books;
-    }
-
     private final List<Book> books = new ArrayList<>();
     private final List<Lending> lendings = new ArrayList<>();
 
 
 
     public LibrarySystem() {
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+    public List<User> getUsers() {
+        return users;
     }
 
     public void addBookWithTitleAndNameOfSingleAuthor(String title, String authorName) {
@@ -28,6 +30,17 @@ public class LibrarySystem {
     public void addBookWithTitleAndUnspecifiedAmountOfAuthors(String title, String... authors) {
         books.add(new Book(title, authors));
     }
+    public void removeBookFromDatabase(String bookName) {
+        books.removeIf(book -> book.getTitle().equalsIgnoreCase(bookName));
+    }
+    public void removeBookFromDatabase(Book bookName) {
+        for (Book book : books) {
+            if (book.equals(bookName)) {
+                books.remove(bookName);
+            }
+        }
+    }
+
     public void addStudentUser(String name, boolean feePaid) {
         users.add(new Student(name, feePaid));
     }
@@ -54,6 +67,31 @@ public class LibrarySystem {
     public void borrowBook(User user, Book book) {
         lendings.add(new Lending(book, user));
     }
+
+    public boolean inLending(String name) {
+        for (Lending len : lendings) {
+            if (len.getBook().getTitle().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public Lending searchLending(Book book) throws UserOrBookDoesNotExistException {
+        for (Lending len: lendings) {
+            if (len.getBook().equals(book)) {
+                return len;
+            }
+        }
+        throw new UserOrBookDoesNotExistException("Book is not on lendings list");
+    }
+    public Lending searchLending(String book) throws UserOrBookDoesNotExistException {
+        for (Lending len : lendings) {
+            if (len.getBook().getTitle().equalsIgnoreCase(book)) {
+                return len;
+            }
+        }
+        throw new UserOrBookDoesNotExistException("Book is not on lendings list");
+    }
     public void extendLending(FacultyMember facultyMember, Book book, LocalDate newDueDate) throws UserOrBookDoesNotExistException {
         for (User user : users) {
             if (user.getName().equals(facultyMember.getName()) && user instanceof FacultyMember) { // only facultyMembers can extend Lending Duration
@@ -67,7 +105,7 @@ public class LibrarySystem {
 
         throw new UserOrBookDoesNotExistException("Invalid FacultyMember entered");
     }
-    public void returnBook(User user, Book book) throws UserOrBookDoesNotExistException {
+    public void returnBook(Book book) throws UserOrBookDoesNotExistException {
 
         for (Lending lending : lendings) {   // Check if the book was actually lent
             if (book.equals(lending.getBook())) {
@@ -75,9 +113,10 @@ public class LibrarySystem {
                 /*
                  *  if (user instanceof Student) ((Student) user).setFeePaid(true);
                  */
-                break;
+                //break;
             }
         }
+
 
         throw new UserOrBookDoesNotExistException("Book was never lent");
 
@@ -90,5 +129,13 @@ public class LibrarySystem {
         // And the parameter says User? I could maybe use if (user instanceof Student)? and then casting or something to do feePaid,
         // but like I Said, Im too unsure if thats what I should do, so im leaving you this text
 
+    }
+
+    public void returnBook(String book) {
+        for (Lending lending : lendings) {
+            if (lending.getBook().getTitle().equalsIgnoreCase(book)) {
+                lendings.remove(lending);
+            }
+        }
     }
 }
