@@ -5,6 +5,11 @@ import java.time.LocalDate;
 public class LibrarySystem {
 
     private final List<User> users = new ArrayList<>();
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
     private final List<Book> books = new ArrayList<>();
     private final List<Lending> lendings = new ArrayList<>();
 
@@ -20,15 +25,19 @@ public class LibrarySystem {
         if (authors.isEmpty()) throw new EmptyAuthorListException("Empty Authors list");
         books.add(new Book(title, authors));
     }
+    public void addBookWithTitleAndUnspecifiedAmountOfAuthors(String title, String... authors) {
+        books.add(new Book(title, authors));
+    }
     public void addStudentUser(String name, boolean feePaid) {
         users.add(new Student(name, feePaid));
     }
     public void addFacultyMemberUser(String name, String department) {
         users.add(new FacultyMember(name, department));
     }
+
     public Book findBookByTitle(String title) throws UserOrBookDoesNotExistException {
         for (Book book : books) {
-            if (book.getTitle().equals(title)) {
+            if (book.getTitle().equalsIgnoreCase(title)) {
                 return book;
             }
         }

@@ -37,8 +37,8 @@ public class BookTest {
         String[] answerKeyForBook1 = {"Madeline Miller"};
         String[] answerKeyForBook2 = {"Terry Pratchett", "Neil Gaiman"};
 
-        List<Author> listOfAuthors1 = book1.getAuthors();
-        List<Author> listOfAuthors2 = book2.getAuthors();
+        List<Author> listOfAuthors1 = book1.getAuthorsRAW();
+        List<Author> listOfAuthors2 = book2.getAuthorsRAW();
 
         for (Author author : listOfAuthors1) {
             for (String name : answerKeyForBook1) {
