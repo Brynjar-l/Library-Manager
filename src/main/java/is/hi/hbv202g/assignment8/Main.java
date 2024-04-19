@@ -31,9 +31,11 @@ public class Main {
         librarySystem.addBookWithTitleAndNameOfSingleAuthor( "Fahrenheit 451", "Ray Bradbury");
         librarySystem.addBookWithTitleAndNameOfSingleAuthor("Jane Eyre", "Charlotte Brontë");
 
-        librarySystem.addStudentUser("John", false);
+        librarySystem.addStudentUser("John", true);
+        librarySystem.addStudentUser("Daniel", true);
 
         librarySystem.addFacultyMemberUser("Smith", "Engineering");
+        librarySystem.addFacultyMemberUser("Helmut", "Computer Science");
 
         librarySystem.borrowBook((Student)librarySystem.getUser("John"), librarySystem.getBook("The secret garden"));
 
@@ -86,26 +88,11 @@ public class Main {
 
                 switch (selected) {
 
-                    case "Search":      // TODO: FINISH
-                        prompt = new ConsolePrompt();
-                        promptBuilder = prompt.getPromptBuilder();
+                    case "Search":
 
-                        promptBuilder.createListPrompt()
-                                .name("SearchChoice")
-                                .message("Would you like to search Users or Books?")
-                                .newItem("Books").text("1. Books").add()
-                                .newItem("Users").text("2. Users").add()
-                                .newItem("Back").text("Back").add()
-                                .addPrompt();
-
-                        result = prompt.prompt(promptBuilder.build());
-                        selected = ((ListResult) result.get("SearchChoice")).getSelectedId();
-
-                        switch (selected) {
-                            case "Books":
-                                boolean loops1 = true;
-                                while (loops1) {
-                                    prompt = new ConsolePrompt();
+                            boolean loops1 = true;
+                            while (loops1) {
+                                prompt = new ConsolePrompt();
                                     promptBuilder = prompt.getPromptBuilder();
 
                                     promptBuilder.createInputPrompt()
@@ -230,7 +217,7 @@ public class Main {
                                         promptBuilder.createConfirmPromp()
                                                 .name("goBack")
                                                 .message("Book does not exist. Try again?")
-                                                .defaultValue(ConfirmChoice.ConfirmationValue.YES)
+                                                .defaultValue(ConfirmChoice.ConfirmationValue.NO)
                                                 .addPrompt();
 
                                         HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
@@ -250,27 +237,8 @@ public class Main {
                                 break;
 
 
-                            case "Users":
-                                prompt = new ConsolePrompt();
-                                promptBuilder = prompt.getPromptBuilder();
-
-                                promptBuilder.createInputPrompt()
-                                        .name("nameInput")
-                                        .message("Search a User:")
-                                        .defaultValue("John Doe")
-                                        .addPrompt();
 
 
-                            case "Back":
-                                System.out.println(ansi().eraseScreen());
-                                System.out.println(ansi().render(introText(3)));
-                                break;
-
-                            default:
-                                break;
-                        }
-
-                        break;
 
 
 
