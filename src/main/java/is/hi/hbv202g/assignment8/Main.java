@@ -47,6 +47,7 @@ public class Main {
         boolean globalnewFacultyBool = false;
         boolean globalLoops3 = false;
         boolean globalLoopBookReturned = false;
+        boolean bookUserAlreadyHasBook = false;
 
         String globalRemovedUser = null;
         String globalnewFaculty = null;
@@ -70,6 +71,7 @@ public class Main {
                 globalnewFacultyBool = false;
                 globalLoops3 = false;
                 globalLoopBookReturned = false;
+                bookUserAlreadyHasBook = false;
 
                 promptBuilder.createListPrompt()
                         .name("selectionChoice")
@@ -149,13 +151,18 @@ public class Main {
 
                                                     for (User user : librarySystem.getUsers()) {
                                                         if (user instanceof Student && user.getName().equalsIgnoreCase(inputSelected)) {
-                                                            librarySystem.borrowBook((Student) user, book);
+                                                            if (((Student)user).isFeePaid()) {
+                                                                librarySystem.borrowBook((Student) user, book);
 
-                                                            forAssignedBook = true;
-                                                            studentForAssignedBookText = user.getName();
-                                                            bookForAssignedBookText = book;
+                                                                forAssignedBook = true;
+                                                                studentForAssignedBookText = user.getName();
+                                                                bookForAssignedBookText = book;
 
-                                                            loops4 = false;
+                                                                loops4 = false;
+                                                            } else {
+                                                                bookUserAlreadyHasBook = true;
+                                                                loops4 = false;
+                                                            }
                                                         }
                                                     }
 
@@ -184,6 +191,9 @@ public class Main {
                                             System.out.println(ansi().render(introText(3)));
                                             if (forAssignedBook) {
                                                 System.out.println(ansi().render("Book assigned to " + studentForAssignedBookText + ". Due by " + librarySystem.searchLending(bookForAssignedBookText).getDueDate()));
+                                            }
+                                            if (bookUserAlreadyHasBook) {
+                                                System.out.println(ansi().render("User already has book!"));
                                             }
                                         } else {
                                             prompt = new ConsolePrompt();

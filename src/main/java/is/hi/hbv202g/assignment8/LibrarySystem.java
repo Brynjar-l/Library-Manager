@@ -122,19 +122,6 @@ public class LibrarySystem {
         throw new UserOrBookDoesNotExistException("Book is not on lendings list");
     }
 
-    public void extendLending(FacultyMember facultyMember, Book book, LocalDate newDueDate) throws UserOrBookDoesNotExistException {
-        for (User user : users) {
-            if (user.getName().equals(facultyMember.getName()) && user instanceof FacultyMember) { // only facultyMembers can extend Lending Duration
-                for (Lending lending : lendings) {
-                    if (book.equals(lending.getBook())) {
-                        lending.setDueDate(newDueDate);
-                    }
-                }
-            }
-        }
-
-        throw new UserOrBookDoesNotExistException("Invalid FacultyMember entered");
-    }
 
     public void returnBook(Book book) throws UserOrBookDoesNotExistException {
 
@@ -150,14 +137,6 @@ public class LibrarySystem {
 
             throw new UserOrBookDoesNotExistException("Book was never lent");
         }
-        // Added a code that checks if User exists in the list, since it will only get checked if the book exists.
-        // I removed it because I realised that it doesn't matter if the User exists by itself,
-        // only that it's the correct user for the lent book
-        // which I even debated on, since does it matter if the same user returns or not?
-        // But it was in the description for parameter variables, so I kept it
-        // Am wondering if I should update FeePaid in Student class, but it wasn't stated the feePaid was in regards to books lent so
-        // And the parameter says User? I could maybe use if (user instanceof Student)? and then casting or something to do feePaid,
-        // but like I Said, Im too unsure if thats what I should do, so im leaving you this text
 
     }
 
