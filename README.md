@@ -5,6 +5,12 @@ Library Manager is a Java based tool to help manage and organize digital records
 This project uses ![ConsoleUI](https://github.com/awegmann/consoleui) to create it's TUI components.
 ConsoleUI is distributed under an ![Apache License 2.0](https://github.com/awegmann/consoleui/blob/master/LICENSE.txt).
 
+## Good to know
+When you launch Library Manager. you will be greeted by 4 options: 1. Search, 2. User Management, 3. Book Management and EXIT.
+User management and Book management have the same features, just for their respective Objects. both allow to see a list of all objects, create new objects and remove objects. Listing objects will include if book is lent or if Student has a book lent at the moment.
+When you want to lend out a book or return a book, you use the search feature, search a book and if its available you will be prompted if you want to rent it and then you have to assign it to a student, each student can only rent out one book at a time. if the book you typed in is already lent out, you will be prompted with the option to return it.
+If you do not know what books are available, go see the book list in Book Manager, this is due to an unforeseen problem with ConsoleUI which didnt not allow us to make Lists interactive.
+
 ## License
 
 ![MIT License](LICENSE)
