@@ -7,7 +7,7 @@ ConsoleUI is distributed under an ![Apache License 2.0](https://github.com/awegm
 
 ## License
 
-![x11 License](LICENSE)
+![MIT License](LICENSE)
 
 ### Prerequisites
 
