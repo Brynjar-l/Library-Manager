@@ -18,6 +18,8 @@ ConsoleUI is distributed under an ![Apache License 2.0](https://github.com/awegm
 ### Installing, Compiling and Executing
 
 To set up the Library Manager on your local machine, follow these steps:
+> [!IMPORTANT]
+> Take note that this program only works in **non-IDE** terminals.
 
 1. Clone the repository to your local machine using Git:
 ```console
@@ -27,11 +29,11 @@ foo@bar:~/Library Manager$ git clone https://github.com/Brynjar-l/Final-Project.
 ```console
 foo@bar:~/Library Manager$ mvn clean compile assembly:single
 ```
-3. run the program:
+3. Run the program:
 ```console
 foo@bar:~/Library Manager$ java -jar target/FinalProject-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
-4. run the tests:
+4. Run the tests:
 ```console
 foo@bar:~/Library Manager$ mvn test
 ```
