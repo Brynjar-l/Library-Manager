@@ -215,6 +215,9 @@ public class Main {
                                                 librarySystem.returnBook(bookForLater);
                                                 globalLoopBookReturned = true;
                                                 loops1 = false;
+
+                                                System.out.println(ansi().eraseScreen());
+                                                System.out.println(ansi().render(introText(3)));
                                             }
                                         }
 
