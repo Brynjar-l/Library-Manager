@@ -1,41 +1,32 @@
 package is.hi.hbv202g.assignment8;
 
-import org.junit.Before;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 
-
 public class FacultyMemberTest {
-    private FacultyMember facultyMember;
-    private final String facultyMemberName = "Olaf";
-    private final String facultyMemberDepartment = "Engineering";
-    @Before
-    public void setUp() throws Exception {
-        facultyMember = new FacultyMember(facultyMemberName, facultyMemberDepartment);
+
+    @Test
+    public void testFacultyMemberConstructor() {
+        String expectedName = "Dr. Smith";
+        String expectedDepartment = "Biology";
+        FacultyMember facultyMember = new FacultyMember(expectedName, expectedDepartment);
+        assertEquals("Constructor should set the name correctly", expectedName, facultyMember.getName());
+        assertEquals("Constructor should set the department correctly", expectedDepartment, facultyMember.getDepartment());
     }
 
     @Test
-    public void getFacultyMemberNameName() {
-        assertEquals(facultyMember.getName(), facultyMemberName);
-    }
-    @Test
-    public void setFacultyMemberNameName() {
-        String newName = "Matt";
-        facultyMember.setName(newName);
-
-        assertEquals(facultyMember.getName(), newName);
-    }
-    @Test
-    public void getDepartment() {
-        assertEquals(facultyMember.getDepartment(), facultyMemberDepartment);
+    public void testGetDepartment() {
+        String department = "Chemistry";
+        FacultyMember facultyMember = new FacultyMember("Prof. Jane", department);
+        assertEquals("getDepartment should return the correct department", department, facultyMember.getDepartment());
     }
 
     @Test
-    public void setDepartment() {
-        String newDepartment = "Philosophy";
+    public void testSetDepartment() {
+        String initialDepartment = "Mathematics";
+        String newDepartment = "Physics";
+        FacultyMember facultyMember = new FacultyMember("Prof. Doe", initialDepartment);
         facultyMember.setDepartment(newDepartment);
-
-        assertEquals(facultyMember.getDepartment(), newDepartment);
+        assertEquals("setDepartment should update the department correctly", newDepartment, facultyMember.getDepartment());
     }
 }

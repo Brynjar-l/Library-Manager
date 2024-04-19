@@ -1,29 +1,30 @@
 package is.hi.hbv202g.assignment8;
 
-import org.junit.Before;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 
 public class AuthorTest {
-    private Author author;
-    private final String authorName = "Theodore";
 
-    @Before
-    public void setUp() throws Exception {
-        author = new Author(authorName);
+    @Test
+    public void testAuthorConstructor() {
+        String expectedName = "John Doe";
+        Author author = new Author(expectedName);
+        assertEquals("Constructor should set the name correctly", expectedName, author.getName());
     }
 
     @Test
-    public void getName() {
-        assertEquals(author.getName(), authorName);
+    public void testGetName() {
+        String testName = "Jane Doe";
+        Author author = new Author(testName);
+        assertEquals("getName should return the correct name", testName, author.getName());
     }
 
     @Test
-    public void setName() {
-        String newName = "Bob";
+    public void testSetName() {
+        String initialName = "Initial Name";
+        String newName = "New Name";
+        Author author = new Author(initialName);
         author.setName(newName);
-
-        assertEquals(author.getName(), newName);
+        assertEquals("setName should update the name correctly", newName, author.getName());
     }
 }
