@@ -39,5 +39,6 @@ foo@bar:~/Library Manager$ mvn test
 ```
 
 ## Authors
+Hópur 20
 - Brynjar Sighvatsson [(brs87@hi.is)](mailto:brs87@hi.is)
 - Daníel Andri Styrmisson [(das68@hi.is)](mailto:das68@hi.is)
