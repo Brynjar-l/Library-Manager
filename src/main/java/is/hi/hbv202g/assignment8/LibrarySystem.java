@@ -31,8 +31,30 @@ public class LibrarySystem {
         books.add(new Book(title, authors));
     }
     public void removeBookFromDatabase(String bookName) {
-        books.removeIf(book -> book.getTitle().equalsIgnoreCase(bookName));
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(bookName)) {
+                books.remove(book);
+            }
+        }
     }
+
+    public static void main(String[] args) {
+        LibrarySystem lib = new LibrarySystem();
+        lib.addBookWithTitleAndUnspecifiedAmountOfAuthors("HELLO", "ME");
+        lib.addBookWithTitleAndUnspecifiedAmountOfAuthors("NUMERO DOS", "ME DOS");
+
+        for (Book book : lib.books) {
+            System.out.println(book.getTitle());
+        }
+
+        lib.removeBookFromDatabase("HeLLO");
+
+        for (Book book : lib.books) {
+            System.out.println(book.getTitle());
+        }
+
+    }
+
     public void removeBookFromDatabase(Book bookName) {
         for (Book book : books) {
             if (book.equals(bookName)) {
@@ -64,8 +86,36 @@ public class LibrarySystem {
         }
         throw new UserOrBookDoesNotExistException("User does not exist");
     }
-    public void borrowBook(User user, Book book) {
+    public void borrowBook(Student user, Book book) {
         lendings.add(new Lending(book, user));
+    }
+
+    public void borrowBook(Student user, String bookName) {
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(bookName) && !book.isLent() && user.isFeePaid()) {
+                user.setFeePaid(false);
+                lendings.add(new Lending(book, user));
+                book.setLentTo(user);
+            }
+        }
+    }
+
+    public User getUser(String name) throws UserOrBookDoesNotExistException {
+        for (User user : users) {
+            if (user.getName().equalsIgnoreCase(name)) {
+                return user;
+            }
+        }
+        throw new UserOrBookDoesNotExistException("User does not exist");
+    }
+
+    public Book getBook(String bookName) throws UserOrBookDoesNotExistException {
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(bookName)) {
+                return book;
+            }
+        }
+        throw new UserOrBookDoesNotExistException("Book does not exist");
     }
 
     public boolean inLending(String name) {
@@ -110,10 +160,8 @@ public class LibrarySystem {
         for (Lending lending : lendings) {   // Check if the book was actually lent
             if (book.equals(lending.getBook())) {
                 lendings.remove(lending);    // removes the book from the lendings list if its returned
-                /*
-                 *  if (user instanceof Student) ((Student) user).setFeePaid(true);
-                 */
-                //break;
+                lending.getUser().returnBook();
+                book.setLent(false);
             }
         }
 

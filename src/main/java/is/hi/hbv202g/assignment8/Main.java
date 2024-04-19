@@ -1,20 +1,20 @@
 package is.hi.hbv202g.assignment8;
 
 import de.codeshelf.consoleui.elements.ConfirmChoice;
-import de.codeshelf.consoleui.prompt.ConsolePrompt;
-import de.codeshelf.consoleui.prompt.PromtResultItemIF;
+import de.codeshelf.consoleui.prompt.*;
 import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
 import jline.TerminalFactory;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, UserOrBookDoesNotExistException {
         AnsiConsole.systemInstall();
         System.out.println(ansi().render(introText(3)));
 
@@ -32,51 +32,56 @@ public class Main {
         librarySystem.addBookWithTitleAndNameOfSingleAuthor("Jane Eyre", "Charlotte Brontë");
 
         librarySystem.addStudentUser("John", false);
+
         librarySystem.addFacultyMemberUser("Smith", "Engineering");
 
-        boolean loops = true;
+        librarySystem.borrowBook((Student)librarySystem.getUser("John"), librarySystem.getBook("The secret garden"));
 
+        boolean forCreatedBook = false;
+        boolean forAssignedBook = false;
+        boolean globalLoops2 = false;
+        boolean globalnewUserBool = false;
+        boolean globalnewFacultyBool = false;
+        boolean globalLoops3 = false;
+
+        String globalRemovedUser = null;
+        String globalnewFaculty = null;
+        String studentForAssignedBookText = null;
+        Book bookForAssignedBookText = null;
+        String globalnewTitle = null;
+        String globalnewTitle2 = null;
+        String globalnewUser = null;
+
+
+        boolean loops = true;
         while (loops) {
             try {
                 ConsolePrompt prompt = new ConsolePrompt();
                 PromptBuilder promptBuilder = prompt.getPromptBuilder();
 
+                forCreatedBook = false;
+                forAssignedBook = false;
+                globalLoops2 = false;
+                globalnewUserBool = false;
+                globalnewFacultyBool = false;
+                globalLoops3 = false;
 
                 promptBuilder.createListPrompt()
                         .name("selectionChoice")
                         .message("MENU")
-                        .newItem("Book Lending Overview").text("1. Book Lending").add()
-                        .newItem("Search").text("2. Search").add()
+                        .newItem("Search").text("1. Search").add()
 
-                        .newItem("User Management").text("3. User Management").add()
-                        .newItem("Book Management").text("4. Book Management").add()
+                        .newItem("User Management").text("2. User Management").add()
+                        .newItem("Book Management").text("3. Book Management").add()
 
                         .newItem("Exit").text("Exit").add()
                         .addPrompt();
 
                 HashMap<String, ? extends PromtResultItemIF> result = prompt.prompt(promptBuilder.build()); // #5
-                String selected = ((de.codeshelf.consoleui.prompt.ListResult) result.get("selectionChoice")).getSelectedId();
+                String selected = ((ListResult) result.get("selectionChoice")).getSelectedId();
 
 
                 switch (selected) {
-                    case "Book Lending Overview":
-
-
-
-                        break;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                     case "Search":      // TODO: FINISH
                         prompt = new ConsolePrompt();
@@ -91,7 +96,7 @@ public class Main {
                                 .addPrompt();
 
                         result = prompt.prompt(promptBuilder.build());
-                        selected = ((de.codeshelf.consoleui.prompt.ListResult) result.get("SearchChoice")).getSelectedId();
+                        selected = ((ListResult) result.get("SearchChoice")).getSelectedId();
 
                         switch (selected) {
                             case "Books":
@@ -106,7 +111,7 @@ public class Main {
                                             .addPrompt();
 
                                     HashMap<String, ? extends PromtResultItemIF> inputResult = prompt.prompt(promptBuilder.build());
-                                    String inputSelected = ((de.codeshelf.consoleui.prompt.InputResult) inputResult.get("nameInput")).getInput();
+                                    String inputSelected = ((InputResult) inputResult.get("nameInput")).getInput();
 
                                     try {
                                         Book book = librarySystem.findBookByTitle(inputSelected);
@@ -131,7 +136,7 @@ public class Main {
                                                     .addPrompt();
 
                                             HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
-                                            String confirmSelected = String.valueOf(((de.codeshelf.consoleui.prompt.ConfirmResult) confirmResult.get("lendBook")).getConfirmed());
+                                            String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("lendBook")).getConfirmed());
 
 
                                             if (confirmSelected.equals("YES")) {
@@ -146,13 +151,17 @@ public class Main {
                                                             .addPrompt();
 
                                                     inputResult = prompt.prompt(promptBuilder.build());
-                                                    inputSelected = ((de.codeshelf.consoleui.prompt.InputResult) inputResult.get("StudentUser")).getInput();
+                                                    inputSelected = ((InputResult) inputResult.get("StudentUser")).getInput();
 
                                                     for (User user : librarySystem.getUsers()) {
                                                         if (user instanceof Student && user.getName().equalsIgnoreCase(inputSelected)) {
-                                                            librarySystem.borrowBook(user, book);
+                                                            librarySystem.borrowBook((Student) user, book);
+
+                                                            forAssignedBook = true;
+                                                            studentForAssignedBookText = user.getName();
+                                                            bookForAssignedBookText = book;
+
                                                             loops4 = false;
-                                                            System.out.println(ansi().render("Book assigned to " + user.getName() + ". Due by " + librarySystem.searchLending(book).getDueDate()));
                                                         }
                                                     }
 
@@ -168,20 +177,44 @@ public class Main {
                                                                 .addPrompt();
 
                                                         confirmResult = prompt.prompt(promptBuilder.build());
-                                                        confirmSelected = String.valueOf(((de.codeshelf.consoleui.prompt.ConfirmResult) confirmResult.get("lendBook")).getConfirmed());
+                                                        confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("TryAgain")).getConfirmed());
 
                                                         if (confirmSelected.equals("NO")) {
-                                                            break;
+                                                            loops4 = false;
                                                         }
                                                     }
                                                 }
+                                            }
+
+                                            System.out.println(ansi().eraseScreen());
+                                            System.out.println(ansi().render(introText(3)));
+                                            if (forAssignedBook) {
+                                                System.out.println(ansi().render("Book assigned to " + studentForAssignedBookText + ". Due by " + librarySystem.searchLending(bookForAssignedBookText).getDueDate()));
                                             }
                                         }
 
                                         loops1 = false;
                                         break;
                                     } catch (Exception ex1) {
-                                        System.out.println("Book does not exist, try again");
+                                        prompt = new ConsolePrompt();
+                                        promptBuilder = prompt.getPromptBuilder();
+
+                                        promptBuilder.createConfirmPromp()
+                                                .name("goBack")
+                                                .message("Book does not exist. Try again?")
+                                                .defaultValue(ConfirmChoice.ConfirmationValue.YES)
+                                                .addPrompt();
+
+                                        HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
+                                        String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("goBack")).getConfirmed());
+
+                                        if (confirmSelected.equals("YES")) {
+                                            loops1 = true;
+                                        } else {
+                                            loops1 = false;
+                                            System.out.println(ansi().eraseScreen());
+                                            System.out.println(ansi().render(introText(3)));
+                                        }
                                     }
 
 
@@ -225,27 +258,227 @@ public class Main {
 
 
                     case "User Management":
-                        System.out.println(ansi().render("3"));
+                        prompt = new ConsolePrompt();
+                        promptBuilder = prompt.getPromptBuilder();
+
+                        promptBuilder.createListPrompt()
+                                .name("UserManager")
+                                .message("Select an Option")
+                                .newItem("1. Create new User").name("CreateNewUser").add()
+                                .newItem("2. Remove User").name("RemoveUser").add()
+                                .newItem("3. See all Users").name("UserList").add()
+                                .newItem("Back").name("Back").add()
+                                .addPrompt();
+
+                        result = prompt.prompt(promptBuilder.build());
+                        selected = ((ListResult) result.get("UserManager")).getSelectedId();
+
+                        switch (selected) {
+
+                            case "CreateNewUser":
+
+                                prompt = new ConsolePrompt();
+                                promptBuilder = prompt.getPromptBuilder();
+
+                                promptBuilder.createListPrompt()
+                                        .name("TypeOfNewUser")
+                                        .message("Pick Type of User")
+                                        .newItem("1. Student User").name("StudentUser").add()
+                                        .newItem("2. Faculty User").name("FacultyUser").add()
+                                        .newItem("Cancel").name("Cancel").add()
+                                        .addPrompt();
+
+                                result = prompt.prompt(promptBuilder.build());
+                                selected = ((ListResult) result.get("TypeOfNewUser")).getSelectedId();
+
+                                switch (selected) {
+                                    case "StudentUser":
+                                        prompt = new ConsolePrompt();
+                                        promptBuilder = prompt.getPromptBuilder();
+
+                                        //
+
+                                        promptBuilder.createInputPrompt()
+                                                .name("UserInput")
+                                                .message("User Name: ")
+                                                .addPrompt();
+
+                                        HashMap<String, ? extends PromtResultItemIF> inputResult = prompt.prompt(promptBuilder.build());
+                                        String inputSelected = ((InputResult) inputResult.get("UserInput")).getInput();
+
+                                        String newUser = inputSelected;
+                                        globalnewUser = newUser;
+                                        globalnewUserBool = true;
+
+                                        librarySystem.addStudentUser(newUser, true);
+                                        break;
+
+                                    case "FacultyUser":
+                                        prompt = new ConsolePrompt();
+                                        promptBuilder = prompt.getPromptBuilder();
+
+                                        //
+
+                                        promptBuilder.createInputPrompt()
+                                                .name("FacultyInput")
+                                                .message("User Name: ")
+                                                .addPrompt();
+
+                                        inputResult = prompt.prompt(promptBuilder.build());
+                                        inputSelected = ((InputResult) inputResult.get("FacultyInput")).getInput();
+
+                                        String newFaculty = inputSelected;
+                                        globalnewFaculty = newFaculty;
+                                        globalnewFacultyBool = true;
+
+                                        prompt = new ConsolePrompt();
+                                        promptBuilder = prompt.getPromptBuilder();
+
+                                        //
+
+                                        promptBuilder.createInputPrompt()
+                                                .name("DepartmentInput")
+                                                .message("Department name: ")
+                                                .addPrompt();
+
+                                        inputResult = prompt.prompt(promptBuilder.build());
+                                        inputSelected = ((InputResult) inputResult.get("DepartmentInput")).getInput();
+
+                                        String newDepartment = inputSelected;
+
+                                        librarySystem.addFacultyMemberUser(newFaculty, newDepartment);
+
+                                        break;
+
+                                    case "Cancel":
+                                        break;
+                                }
+
+                                break;
+
+
+                            case "RemoveUser":
+                                boolean loops3 = true;
+
+                                while(loops3) {
+                                    prompt = new ConsolePrompt();
+                                    promptBuilder = prompt.getPromptBuilder();
+
+                                    //
+
+                                    promptBuilder.createInputPrompt()
+                                            .name("UserToRemoveInput")
+                                            .message("User: ")
+                                            .addPrompt();
+
+                                    HashMap<String, ? extends PromtResultItemIF> inputResult = prompt.prompt(promptBuilder.build());
+                                    String inputSelected = ((InputResult) inputResult.get("UserToRemoveInput")).getInput();
+                                    String UserToRemove = inputSelected;
+
+                                    Iterator<User> iterator = librarySystem.getUsers().iterator();
+                                    while (iterator.hasNext()) {
+                                        User user = iterator.next();
+                                        if (user.getName().equalsIgnoreCase(UserToRemove)) {
+                                            iterator.remove();
+                                            librarySystem.removeBookFromDatabase(UserToRemove); //////
+                                            loops3 = false; //////
+                                            globalLoops3 = true;    //////
+                                            globalRemovedUser = user.getName();  //////
+                                            break;
+                                        }
+                                    }
+
+                                    if (loops3) {
+                                        prompt = new ConsolePrompt();
+                                        promptBuilder = prompt.getPromptBuilder();
+
+                                        promptBuilder.createConfirmPromp()
+                                                .name("goBack")
+                                                .message("Go Back?")
+                                                .defaultValue(ConfirmChoice.ConfirmationValue.YES)
+                                                .addPrompt();
+
+                                        HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
+                                        String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("goBack")).getConfirmed());
+
+                                        if (confirmSelected.equals("YES")) {
+                                            loops3 = false;
+
+                                            System.out.println(ansi().eraseScreen());
+                                            System.out.println(ansi().render(introText(3)));
+                                        }
+                                    }
+                                }
+
+                                break;
+
+
+                            case "UserList":
+                                System.out.println(ansi().render("FACULTY MEMBERS: "));
+                                for (User user : librarySystem.getUsers()) {
+                                    if (user instanceof FacultyMember) {
+                                        System.out.println(ansi().render(user.getName() + ", Department of " + ((FacultyMember) user).getDepartment()));
+                                    }
+                                }
+
+                                System.out.println(ansi().render("\nSTUDENTS: "));
+                                for (User user : librarySystem.getUsers()) {
+                                    if (user instanceof Student) {
+                                        System.out.print(ansi().render(user.getName()));
+                                        if (!((Student)user).isFeePaid()) {
+                                            System.out.println(ansi().render(", " + ((Student) user).getBookRented().getTitle() + " Due by " + librarySystem.searchLending(((Student) user).getBookRented()).getDueDate()));
+
+                                        } else {
+                                            System.out.println(ansi().render(", no books due"));
+                                        }
+                                    }
+                                }
+
+                                boolean keepGoing2 = true;
+
+                                while(keepGoing2) {
+                                    prompt = new ConsolePrompt();
+                                    promptBuilder = prompt.getPromptBuilder();
+
+                                    promptBuilder.createConfirmPromp()
+                                            .name("goBack")
+                                            .message("Go Back?")
+                                            .defaultValue(ConfirmChoice.ConfirmationValue.YES)
+                                            .addPrompt();
+
+                                    HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
+                                    String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("goBack")).getConfirmed());
+
+                                    if (confirmSelected.equals("YES")) {
+                                        keepGoing2 = false;
+
+                                        // REMOVED ANSI ERASE
+                                    }
+                                }
+
+
+
+
+                                break;
+
+                            case "Back":
+                                break;
+
+                        }
+
+                        System.out.println(ansi().eraseScreen());
+                        System.out.println(ansi().render(introText(3)));
+                        if (globalnewUserBool) {
+                            System.out.println(ansi().render("User: " + globalnewUser + " created!"));
+                        }
+                        if (globalnewFacultyBool) {
+                            System.out.println(ansi().render("User: " + globalnewFaculty + " created!"));
+                        }
+
+
                         break;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    case "Book Management":
+                    case "Book Management":         // FINISHED
 
                         prompt = new ConsolePrompt();
                         promptBuilder = prompt.getPromptBuilder();
@@ -253,16 +486,15 @@ public class Main {
                         promptBuilder.createListPrompt()
                                 .name("BookManager")
                                 .message("Select an Option")
-                                .newItem("Create new book").name("CreateNewBook").add()
-                                .newItem("Remove book").name("RemoveBook").add()
-                                .newItem("See all books").name("BookList").add()
+                                .newItem("1. Create new Book").name("CreateNewBook").add()
+                                .newItem("2. Remove Book").name("RemoveBook").add()
+                                .newItem("3. See all Books").name("BookList").add()
                                 .newItem("Back").name("Back").add()
                                 .addPrompt();
 
                         result = prompt.prompt(promptBuilder.build());
-                        selected = ((de.codeshelf.consoleui.prompt.ListResult) result.get("BookManager")).getSelectedId();
+                        selected = ((ListResult) result.get("BookManager")).getSelectedId();
 
-                        System.out.println(ansi().render("OPTION SELECTED ----: " + selected));
 
                         switch (selected) {
 
@@ -279,8 +511,9 @@ public class Main {
                                         .addPrompt();
 
                                 HashMap<String, ? extends PromtResultItemIF> inputResult = prompt.prompt(promptBuilder.build());
-                                String inputSelected = ((de.codeshelf.consoleui.prompt.InputResult) inputResult.get("TitleInput")).getInput();
+                                String inputSelected = ((InputResult) inputResult.get("TitleInput")).getInput();
                                 String newTitle = inputSelected;
+                                globalnewTitle = newTitle;
 
                                 prompt = new ConsolePrompt();
                                 promptBuilder = prompt.getPromptBuilder();
@@ -292,19 +525,21 @@ public class Main {
                                         .addPrompt();
 
                                 inputResult = prompt.prompt(promptBuilder.build());
-                                inputSelected = ((de.codeshelf.consoleui.prompt.InputResult) inputResult.get("AuthorsInput")).getInput();
+                                inputSelected = ((InputResult) inputResult.get("AuthorsInput")).getInput();
 
                                 String newAuthors = inputSelected;
                                 String[] newAuthorsArray = newAuthors.split(",");
 
                                 librarySystem.addBookWithTitleAndUnspecifiedAmountOfAuthors(newTitle, newAuthorsArray);
+                                forCreatedBook = true;
 
-                                System.out.println(ansi().render("Book: " + newTitle + " created!"));
+
 
 
                                 break;
                             case "RemoveBook":
                                 boolean loops2 = true;
+
                                 while(loops2) {
                                     prompt = new ConsolePrompt();
                                     promptBuilder = prompt.getPromptBuilder();
@@ -317,23 +552,56 @@ public class Main {
                                             .addPrompt();
 
                                     inputResult = prompt.prompt(promptBuilder.build());
-                                    inputSelected = ((de.codeshelf.consoleui.prompt.InputResult) inputResult.get("toRemoveInput")).getInput();
+                                    inputSelected = ((InputResult) inputResult.get("toRemoveInput")).getInput();
                                     String titleToRemove = inputSelected;
 
-                                    for (Book book : librarySystem.getBooks()) {
+                                    Iterator<Book> iterator = librarySystem.getBooks().iterator();
+                                    while (iterator.hasNext()) {
+                                        Book book = iterator.next();
                                         if (book.getTitle().equalsIgnoreCase(titleToRemove)) {
+                                            iterator.remove();
                                             librarySystem.removeBookFromDatabase(titleToRemove);
-                                            if (librarySystem.inLending(titleToRemove)) {
-                                                librarySystem.returnBook(titleToRemove);
-                                            }
+                                            loops2 = false;
+                                            globalLoops2 = true;
+                                            globalnewTitle2 = book.getTitle();
+                                            break;
                                         }
                                     }
+
+                                    if (loops2) {
+                                        prompt = new ConsolePrompt();
+                                        promptBuilder = prompt.getPromptBuilder();
+
+                                        promptBuilder.createConfirmPromp()
+                                                .name("goBack")
+                                                .message("Go Back?")
+                                                .defaultValue(ConfirmChoice.ConfirmationValue.YES)
+                                                .addPrompt();
+
+                                        HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
+                                        String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("goBack")).getConfirmed());
+
+                                        if (confirmSelected.equals("YES")) {
+                                            loops2 = false;
+
+                                            System.out.println(ansi().eraseScreen());
+                                            System.out.println(ansi().render(introText(3)));
+                                        }
+                                    }
+
+
+
                                 }
 
                                 break;
-                            case "BookList":        // FINISHED
+                            case "BookList":            // FINISHED
                                 for (Book book : librarySystem.getBooks()) {
-                                    System.out.println(ansi().render("(" + (book.isLent() ? "Unavailable" : "Available") + ") " + book.getTitle() + ", by " + book.getAuthors()));
+
+                                    if (librarySystem.inLending(book.getTitle())) {
+                                        System.out.println(ansi().render("(Due " + librarySystem.searchLending(book.getTitle()).getDueDate() + ") " + book.getTitle() + ", by " + book.getAuthors()));
+                                    } else {
+                                        System.out.println(ansi().render("(Available) " + book.getTitle() + ", by " + book.getAuthors()));
+                                    }
                                 }
 
                                 boolean keepGoing = true;
@@ -349,13 +617,12 @@ public class Main {
                                             .addPrompt();
 
                                     HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
-                                    String confirmSelected = String.valueOf(((de.codeshelf.consoleui.prompt.ConfirmResult) confirmResult.get("goBack")).getConfirmed());
+                                    String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("goBack")).getConfirmed());
 
                                     if (confirmSelected.equals("YES")) {
                                         keepGoing = false;
 
-                                        System.out.println(ansi().eraseScreen());
-                                        System.out.println(ansi().render(introText(3)));
+                                        // REMOVED ANSI ERASE
                                     }
                                 }
 
@@ -365,6 +632,15 @@ public class Main {
                                 System.out.println(ansi().eraseScreen());
                                 System.out.println(ansi().render(introText(3)));
                                 break;
+                        }
+
+                        System.out.println(ansi().eraseScreen());
+                        System.out.println(ansi().render(introText(3)));
+                        if (forCreatedBook) {
+                            System.out.println(ansi().render("Book: " + globalnewTitle + " created!"));
+                        }
+                        if (globalLoops2) {
+                            System.out.println(ansi().render("Book: " + globalnewTitle2 + " removed!"));
                         }
 
                         break;
@@ -379,6 +655,8 @@ public class Main {
 
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (UserOrBookDoesNotExistException e) {
+                throw new RuntimeException(e);
             } finally {
                 try {
                     TerminalFactory.get().restore();

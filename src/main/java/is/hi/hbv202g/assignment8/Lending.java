@@ -5,12 +5,14 @@ import java.time.LocalDate;
 public class Lending {
     private LocalDate dueDate;
     private Book book;
-    private User user;
+    private Student user;
 
-    public Lending(Book book, User user) {
+    public Lending(Book book, Student user) {
         this.book = book;
         this.user = user;
         dueDate = LocalDate.now().plusDays(30);
+
+        user.setBookRented(book);
     }
 
     public LocalDate getDueDate() {
@@ -29,11 +31,11 @@ public class Lending {
         this.book = book;
     }
 
-    public User getUser() {
+    public Student getUser() {
         return user;
     }
 
-    public void setUser(User user){
+    public void setUser(Student user){
         this.user = user;
     }
 }
