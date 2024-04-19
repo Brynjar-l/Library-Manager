@@ -37,12 +37,14 @@ public class Main {
 
         librarySystem.borrowBook((Student)librarySystem.getUser("John"), librarySystem.getBook("The secret garden"));
 
+
         boolean forCreatedBook = false;
         boolean forAssignedBook = false;
         boolean globalLoops2 = false;
         boolean globalnewUserBool = false;
         boolean globalnewFacultyBool = false;
         boolean globalLoops3 = false;
+        boolean globalLoopBookReturned = false;
 
         String globalRemovedUser = null;
         String globalnewFaculty = null;
@@ -65,6 +67,7 @@ public class Main {
                 globalnewUserBool = false;
                 globalnewFacultyBool = false;
                 globalLoops3 = false;
+                globalLoopBookReturned = false;
 
                 promptBuilder.createListPrompt()
                         .name("selectionChoice")
@@ -113,8 +116,11 @@ public class Main {
                                     HashMap<String, ? extends PromtResultItemIF> inputResult = prompt.prompt(promptBuilder.build());
                                     String inputSelected = ((InputResult) inputResult.get("nameInput")).getInput();
 
+
                                     try {
-                                        Book book = librarySystem.findBookByTitle(inputSelected);
+                                        Book book = librarySystem.findBookByTitle(inputSelected);       // TRY CATCHED
+                                        Book bookForLater = book;
+
                                         String authors = book.getAuthors();
                                         String status = book.isLent() ? "Currently not available" : "Available";
 
@@ -124,6 +130,7 @@ public class Main {
                                         System.out.println(ansi().render("Status: " + status));
 
                                         System.out.println(ansi().render("\n"));
+
 
                                         if (!book.isLent()) {
                                             prompt = new ConsolePrompt();
@@ -191,6 +198,24 @@ public class Main {
                                             if (forAssignedBook) {
                                                 System.out.println(ansi().render("Book assigned to " + studentForAssignedBookText + ". Due by " + librarySystem.searchLending(bookForAssignedBookText).getDueDate()));
                                             }
+                                        } else {
+                                            prompt = new ConsolePrompt();
+                                            promptBuilder = prompt.getPromptBuilder();
+
+                                            promptBuilder.createConfirmPromp()
+                                                    .name("ReturnBook")
+                                                    .message("Would you like to return the book?")
+                                                    .defaultValue(ConfirmChoice.ConfirmationValue.NO)
+                                                    .addPrompt();
+
+                                            HashMap<String, ? extends PromtResultItemIF> confirmResult = prompt.prompt(promptBuilder.build());
+                                            String confirmSelected = String.valueOf(((ConfirmResult) confirmResult.get("ReturnBook")).getConfirmed());
+
+                                            if (confirmSelected.equals("YES")) {
+                                                librarySystem.returnBook(bookForLater);
+                                                globalLoopBookReturned = true;
+                                                loops1 = false;
+                                            }
                                         }
 
                                         loops1 = false;
@@ -241,6 +266,7 @@ public class Main {
                             default:
                                 break;
                         }
+
                         break;
 
 
@@ -475,6 +501,10 @@ public class Main {
                             System.out.println(ansi().render("User: " + globalnewFaculty + " created!"));
                         }
 
+                        if (globalLoops3) {
+                            System.out.println(ansi().render("User: " + globalRemovedUser + " created!"));
+                        }
+
 
                         break;
 
@@ -597,8 +627,8 @@ public class Main {
                             case "BookList":            // FINISHED
                                 for (Book book : librarySystem.getBooks()) {
 
-                                    if (librarySystem.inLending(book.getTitle())) {
-                                        System.out.println(ansi().render("(Due " + librarySystem.searchLending(book.getTitle()).getDueDate() + ") " + book.getTitle() + ", by " + book.getAuthors()));
+                                    if (librarySystem.inLending(book)) {
+                                        System.out.println(ansi().render("(Due " + librarySystem.searchLending(book).getDueDate() + ") " + book.getTitle() + ", by " + book.getAuthors()));
                                     } else {
                                         System.out.println(ansi().render("(Available) " + book.getTitle() + ", by " + book.getAuthors()));
                                     }
@@ -650,6 +680,10 @@ public class Main {
                         break;
                     default:
                         break;
+                }
+
+                if (globalLoopBookReturned) {
+                    System.out.println(ansi().render("Book was returned"));
                 }
 
 

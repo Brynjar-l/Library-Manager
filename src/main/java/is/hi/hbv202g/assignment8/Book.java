@@ -82,7 +82,6 @@ public class Book {
 
     public void returned() {
         setLent(false);
-        lentTo.setFeePaid(true);
         lentTo = null;
     }
 

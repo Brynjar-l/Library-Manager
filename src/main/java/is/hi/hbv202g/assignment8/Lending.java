@@ -13,6 +13,7 @@ public class Lending {
         dueDate = LocalDate.now().plusDays(30);
 
         user.setBookRented(book);
+        book.setLent(true);
     }
 
     public LocalDate getDueDate() {

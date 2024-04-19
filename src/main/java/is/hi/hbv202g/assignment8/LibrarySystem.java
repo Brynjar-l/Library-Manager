@@ -38,22 +38,6 @@ public class LibrarySystem {
         }
     }
 
-    public static void main(String[] args) {
-        LibrarySystem lib = new LibrarySystem();
-        lib.addBookWithTitleAndUnspecifiedAmountOfAuthors("HELLO", "ME");
-        lib.addBookWithTitleAndUnspecifiedAmountOfAuthors("NUMERO DOS", "ME DOS");
-
-        for (Book book : lib.books) {
-            System.out.println(book.getTitle());
-        }
-
-        lib.removeBookFromDatabase("HeLLO");
-
-        for (Book book : lib.books) {
-            System.out.println(book.getTitle());
-        }
-
-    }
 
     public void removeBookFromDatabase(Book bookName) {
         for (Book book : books) {
@@ -90,6 +74,7 @@ public class LibrarySystem {
         lendings.add(new Lending(book, user));
     }
 
+    /*
     public void borrowBook(Student user, String bookName) {
         for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(bookName) && !book.isLent() && user.isFeePaid()) {
@@ -99,6 +84,8 @@ public class LibrarySystem {
             }
         }
     }
+
+     */
 
     public User getUser(String name) throws UserOrBookDoesNotExistException {
         for (User user : users) {
@@ -118,9 +105,9 @@ public class LibrarySystem {
         throw new UserOrBookDoesNotExistException("Book does not exist");
     }
 
-    public boolean inLending(String name) {
+    public boolean inLending(Book name) {
         for (Lending len : lendings) {
-            if (len.getBook().getTitle().equalsIgnoreCase(name)) {
+            if (len.getBook().equals(name)) {
                 return true;
             }
         }
@@ -134,14 +121,7 @@ public class LibrarySystem {
         }
         throw new UserOrBookDoesNotExistException("Book is not on lendings list");
     }
-    public Lending searchLending(String book) throws UserOrBookDoesNotExistException {
-        for (Lending len : lendings) {
-            if (len.getBook().getTitle().equalsIgnoreCase(book)) {
-                return len;
-            }
-        }
-        throw new UserOrBookDoesNotExistException("Book is not on lendings list");
-    }
+
     public void extendLending(FacultyMember facultyMember, Book book, LocalDate newDueDate) throws UserOrBookDoesNotExistException {
         for (User user : users) {
             if (user.getName().equals(facultyMember.getName()) && user instanceof FacultyMember) { // only facultyMembers can extend Lending Duration
@@ -155,19 +135,21 @@ public class LibrarySystem {
 
         throw new UserOrBookDoesNotExistException("Invalid FacultyMember entered");
     }
+
     public void returnBook(Book book) throws UserOrBookDoesNotExistException {
 
-        for (Lending lending : lendings) {   // Check if the book was actually lent
-            if (book.equals(lending.getBook())) {
-                lendings.remove(lending);    // removes the book from the lendings list if its returned
-                lending.getUser().returnBook();
-                book.setLent(false);
-            }
+        if (inLending(book)) {
+            Lending lending = searchLending(book);
+            lending.getUser().returnBook();
+            lending.getBook().returned();
+
+            lendings.remove(lending);
+
+        } else {
+
+
+            throw new UserOrBookDoesNotExistException("Book was never lent");
         }
-
-
-        throw new UserOrBookDoesNotExistException("Book was never lent");
-
         // Added a code that checks if User exists in the list, since it will only get checked if the book exists.
         // I removed it because I realised that it doesn't matter if the User exists by itself,
         // only that it's the correct user for the lent book
@@ -176,6 +158,19 @@ public class LibrarySystem {
         // Am wondering if I should update FeePaid in Student class, but it wasn't stated the feePaid was in regards to books lent so
         // And the parameter says User? I could maybe use if (user instanceof Student)? and then casting or something to do feePaid,
         // but like I Said, Im too unsure if thats what I should do, so im leaving you this text
+
+    }
+
+    public static void main(String[] args) throws UserOrBookDoesNotExistException {
+        LibrarySystem lib = new LibrarySystem();
+        lib.addStudentUser("B", true);
+        lib.addBookWithTitleAndUnspecifiedAmountOfAuthors("1900", "Brynjar");
+        lib.borrowBook(((Student)lib.getUser("B")), lib.getBook("1900"));
+
+        System.out.println("BOOK IS BORROWED? " + lib.inLending(lib.getBook("1900")));
+
+        lib.returnBook(lib.getBook("1900"));
+
 
     }
 
