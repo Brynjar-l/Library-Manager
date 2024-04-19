@@ -1,78 +1,79 @@
 package is.hi.hbv202g.assignment8;
 
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-// TODO: check for exception throwing, !IMPORTANT
-
 public class BookTest {
-    private Book book1;
-    private final String title1 = "Circe";
-    private final String author1 = "Madeline Miller";
-    
-    private Book book2;
-    private final String title2 = "Good Omens";
-    private final String author2 = "Terry Pratchett";
-    private final String author3 = "Neil Gaiman";
-    private List<Author> authors;
+
+    private Book singleAuthorBook;
+    private Book multipleAuthorsBook;
+    private List<Author> authorList;
 
     @Before
-    public void setUp() throws Exception {
-        book1 = new Book(title1, author1);
-
-        authors = new ArrayList<>();
-        authors.add(new Author(author2));
-        authors.add(new Author(author3));
-
-        book2 = new Book(title2, authors);
+    public void setUp() throws EmptyAuthorListException {
+        singleAuthorBook = new Book("1984", "George Orwell");
+        authorList = new ArrayList<>(Arrays.asList(new Author("J.K. Rowling"), new Author("H.G. Wells")));
+        multipleAuthorsBook = new Book("Book Title", authorList);
     }
 
     @Test
-    public void getAuthors() {
-        String[] answerKeyForBook1 = {"Madeline Miller"};
-        String[] answerKeyForBook2 = {"Terry Pratchett", "Neil Gaiman"};
-
-        List<Author> listOfAuthors1 = book1.getAuthorsRAW();
-        List<Author> listOfAuthors2 = book2.getAuthorsRAW();
-
-        for (Author author : listOfAuthors1) {
-            for (String name : answerKeyForBook1) {
-            }
-        }
-    }
-
-    @Test (expected = EmptyAuthorListException.class)
-    public void setAuthorsEmptyShouldThrowException() throws EmptyAuthorListException {
-        List<Author> newListOfAuthors = new ArrayList<>();
-        book1.setAuthors(newListOfAuthors);
+    public void testSingleAuthorConstructor() {
+        assertEquals("1984", singleAuthorBook.getTitle());
+        assertEquals("George Orwell", singleAuthorBook.getAuthors());
+        assertFalse(singleAuthorBook.isLent());
     }
 
     @Test
-    public void addAuthor() {       // TODO: passa að getAuthors() virki fyrst
-        book1.addAuthor(new Author("New Author"));
-        // getAuthors(); frá Test Skjalinu
+    public void testMultipleAuthorsConstructor() throws EmptyAuthorListException {
+        assertEquals("Book Title", multipleAuthorsBook.getTitle());
+        assertEquals("J.K. Rowling, H.G. Wells", multipleAuthorsBook.getAuthors());
+        assertFalse(multipleAuthorsBook.isLent());
+    }
+
+    @Test(expected = EmptyAuthorListException.class)
+    public void testEmptyAuthorListException() throws EmptyAuthorListException {
+        new Book("Empty Authors", new ArrayList<>());
     }
 
     @Test
-    public void getTitle() {
-        assertEquals(title1, book1.getTitle());
-        assertEquals(title2, book2.getTitle());
+    public void testAddAuthor() {
+        singleAuthorBook.addAuthor(new Author("Aldous Huxley"));
+        assertEquals("George Orwell, Aldous Huxley", singleAuthorBook.getAuthors());
     }
 
     @Test
-    public void setTitle() {
-        final String newTitle1 = "Harry Potter";
-        final String newTitle2 = "The Lord of the Rings";
+    public void testSetAuthors() throws EmptyAuthorListException {
+        List<Author> newAuthors = Arrays.asList(new Author("Orwell"), new Author("Tolkien"));
+        singleAuthorBook.setAuthors(newAuthors);
+        assertEquals("Orwell, Tolkien", singleAuthorBook.getAuthors());
+    }
 
-        book1.setTitle(newTitle1);
-        book2.setTitle(newTitle2);
+    @Test
+    public void testSetTitle() {
+        singleAuthorBook.setTitle("Animal Farm");
+        assertEquals("Animal Farm", singleAuthorBook.getTitle());
+    }
 
-        assertEquals(newTitle1, book1.getTitle());
-        assertEquals(newTitle2, book2.getTitle());
+    @Test
+    public void testLending() {
+        Student student = new Student("Jane Doe", true);
+        singleAuthorBook.setLentTo(student);
+        singleAuthorBook.setLent(true);
+        assertTrue(singleAuthorBook.isLent());
+        assertEquals(student, singleAuthorBook.getLentTo());
+    }
+
+    @Test
+    public void testReturned() {
+        Student student = new Student("Jane Doe", true);
+        singleAuthorBook.setLentTo(student);
+        singleAuthorBook.setLent(true);
+        singleAuthorBook.returned();
+        assertFalse(singleAuthorBook.isLent());
+        assertNull(singleAuthorBook.getLentTo());
     }
 }
