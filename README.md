@@ -2,8 +2,8 @@
 
 Library Manager is a Java based tool to help manage and organize digital records for a library. The project was built using Maven and tested with JUnit 4, this project features a TUI crafted using ConsoleUI, which leverages JLine and Jansi for a clean and efficient user experience.
 
-This project uses ![ConsoleUI](https://github.com/awegmann/consoleui) to create it's TUI components
-ConsoleUI is distributed under an ![Apache License 2.0](https://github.com/awegmann/consoleui/blob/master/LICENSE.txt)
+This project uses ![ConsoleUI](https://github.com/awegmann/consoleui) to create it's TUI components.
+ConsoleUI is distributed under an ![Apache License 2.0](https://github.com/awegmann/consoleui/blob/master/LICENSE.txt).
 
 ## License
 
@@ -15,7 +15,7 @@ ConsoleUI is distributed under an ![Apache License 2.0](https://github.com/awegm
 - Maven
 - Any non-IDE terminal
 
-### Installing
+### Installing, Compiling and Executing
 
 To set up the Library Manager on your local machine, follow these steps:
 
@@ -35,3 +35,7 @@ foo@bar:~/Library Manager$ java -jar target/FinalProject-1.0-SNAPSHOT-jar-with-d
 ```console
 foo@bar:~/Library Manager$ mvn test
 ```
+
+## Authors
+- Brynjar Sighvatsson [(brs87@hi.is)](mailto:brs87@hi.is)
+- Daníel Andri Styrmisson [(das68@hi.is)](mailto:das68@hi.is)
